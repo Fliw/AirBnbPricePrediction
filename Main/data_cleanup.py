@@ -12,8 +12,8 @@ import datetime as dt
 # Importing the dataset
 filename = '../Data/listings.csv'
 reviews_filename = '../Data/reviews_cleaned.csv'
-data = pd.read_csv(filename)
-reviews = pd.read_csv(reviews_filename, names = ['listing_id', 'comments'])
+data = pd.read_csv(filename, low_memory=False)
+reviews = pd.read_csv(reviews_filename, names = ['listing_id', 'comments'], low_memory=False)
 # print(data.info)
 # print(list(data))
 # print(list(data)[43])
@@ -22,7 +22,7 @@ reviews = pd.read_csv(reviews_filename, names = ['listing_id', 'comments'])
 
 # Taking out the unwanted columns
 print(len(data.columns))
-exit()
+# exit()
 data = pd.DataFrame.drop(data, columns=[
     'host_name',
     'notes', # Added PRK
@@ -86,11 +86,13 @@ print('Splitting host verifications')
 host_verification_set = set()
 
 def collect_host_verifications(entry):
-    entry_list = entry.replace("[", "").replace("]", "").replace("'", "").replace('"', "").replace(" ", "").split(',')
-    for verification in entry_list:
-        if (verification != "" and verification != 'None'):
-            host_verification_set.add(verification +"_verification")
+    if isinstance(entry, str):  # Periksa apakah entry adalah string
+        entry_list = entry.replace("[", "").replace("]", "").replace("'", "").replace('"', "").replace(" ", "").split(',')
+        for verification in entry_list:
+            if verification != "" and verification != 'None':
+                host_verification_set.add(verification + "_verification")
 
+data['host_verifications'] = data['host_verifications'].fillna('')
 data['host_verifications'].apply(collect_host_verifications)
 
 def generic_verification(entry, v):

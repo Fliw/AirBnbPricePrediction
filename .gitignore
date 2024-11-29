@@ -1,6 +1,7 @@
 Data/
 data/
 poster/
+env/
 
 *.csv
 *.xlsx
